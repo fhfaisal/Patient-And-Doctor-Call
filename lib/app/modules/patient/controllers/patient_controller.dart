@@ -7,6 +7,8 @@ class PatientController extends GetxController {
   late RtcEngine engine;
   final RxInt? remoteUid = 0.obs;
   final RxBool localUserJoined = false.obs;
+  RxBool isMuted = false.obs;
+  RxBool isVideoEnabled = true.obs;
 
   @override
   void onInit() {
@@ -51,9 +53,29 @@ class PatientController extends GetxController {
     );
   }
 
+  // Toggle mute
+  void toggleMute() {
+    isMuted.value = !isMuted.value;
+    engine.muteLocalAudioStream(isMuted.value);
+  }
+
+  // Toggle video visibility
+  void toggleVideo() {
+    isVideoEnabled.value = !isVideoEnabled.value;
+    engine.muteLocalVideoStream(!isVideoEnabled.value);
+  }
+
   // Leave the channel
-  Future<void> leaveChannel() async {
+  Future<void> endCall() async {
     await engine.leaveChannel();
-    Get.back(); // Navigate back
+    remoteUid!.value = 0;
+    localUserJoined.value = false;
+  }
+
+  @override
+  void onClose() {
+    engine.leaveChannel();
+    engine.release();
+    super.onClose();
   }
 }
