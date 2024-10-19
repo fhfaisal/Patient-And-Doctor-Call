@@ -27,7 +27,7 @@ class DoctorListScreen extends StatelessWidget {
               if (isPatient) {
                 Get.to(() => PatientVideoCallScreen(channelName: channelName));
               } else {
-                Get.to(() => DoctorVideoCallScreen(channelName: channelName));
+                Get.to(() => DoctorVideoCallScreen(),arguments: channelName);
               }
             },
           );

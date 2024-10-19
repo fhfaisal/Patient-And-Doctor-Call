@@ -1,6 +1,9 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:untitled1/app/data/TOKEN_RESPONSE.dart';
+import 'package:untitled1/app/repository/api_service.dart';
 
 import '../../../utils/channel_helper.dart';
 
@@ -10,18 +13,41 @@ class DoctorController extends GetxController {
   final RxBool localUserJoined = false.obs;
   RxBool isMuted = false.obs;
   RxBool isVideoEnabled = true.obs;
+  final channelName=Get.arguments;
+  final Rx<TokenResponse> tokenResponse= TokenResponse().obs;
 
   @override
   void onInit() {
     super.onInit();
+    channelName;
+    print("I got The Arguments $channelName");
+    getToken();
     initAgora();
   }
+  Future<TokenResponse?> getToken() async {
+    //Map<String, dynamic> values = {'api_token': apiToken, 'customer_id': customerId};
+    try {
+      await ApiService().getToken(channelName: channelName).then((response) {
+        if (response != null) {
+          tokenResponse.value = response;
+          print(tokenResponse.value.channelName);
+          print(tokenResponse.value.token);
+        }
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+    return null;
+  }
+
 
   Future<void> initAgora() async {
     final hasPermissions = await AppHelper.requestPermissions();
     if (!hasPermissions) return;
     engine = createAgoraRtcEngine();
-    await engine.initialize(RtcEngineContext(appId: AppHelper.appId,channelProfile: ChannelProfileType.channelProfileCommunication));
+    await engine.initialize(const RtcEngineContext(appId: AppHelper.appId,channelProfile: ChannelProfileType.channelProfileCommunication));
 
     engine.registerEventHandler(RtcEngineEventHandler(
       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
@@ -45,8 +71,8 @@ class DoctorController extends GetxController {
 
   Future<void> joinChannel(String channelName) async {
     await engine.joinChannel(
-      token: AppHelper.tempToken,
-      channelId: channelName,
+      token: tokenResponse.value.token!,
+      channelId: tokenResponse.value.channelName!,
       uid: 0,
       options: const ChannelMediaOptions(),
     );

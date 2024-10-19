@@ -27,15 +27,14 @@ class DoctorView extends StatelessWidget {
 }
 
 class DoctorVideoCallScreen extends StatelessWidget {
-  final String channelName;
+  //final String channelName;
   final DoctorController controller = Get.put(DoctorController());
 
-  DoctorVideoCallScreen({required this.channelName});
+  //DoctorVideoCallScreen({super.key, required this.channelName});
 
   @override
   Widget build(BuildContext context) {
-    controller.joinChannel(channelName);
-
+    controller.joinChannel(controller.channelName);
     return Scaffold(
       appBar: AppBar(title: const Text("Doctor Video Call")),
       body: Obx(() {
@@ -75,8 +74,7 @@ class DoctorVideoCallScreen extends StatelessWidget {
             controller: VideoViewController.remote(
             rtcEngine: controller.engine,
             canvas: VideoCanvas(uid: controller.remoteUid!.value),
-            connection: RtcConnection(channelId: channelName),
+            connection: RtcConnection(channelId: controller.channelName),
           )));
   }
 }
-
