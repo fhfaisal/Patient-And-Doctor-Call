@@ -30,8 +30,8 @@ class DoctorController extends GetxController {
       await ApiService().getToken(channelName: channelName).then((response) {
         if (response != null) {
           tokenResponse.value = response;
-          print(tokenResponse.value.channelName);
-          print(tokenResponse.value.token);
+          //print(tokenResponse.value.channelName);
+          //print(tokenResponse.value.token);
         }
       });
     } catch (e) {
@@ -69,13 +69,15 @@ class DoctorController extends GetxController {
     await engine.startPreview();
   }
 
-  Future<void> joinChannel(String channelName) async {
-    await engine.joinChannel(
-      token: tokenResponse.value.token!,
-      channelId: tokenResponse.value.channelName!,
-      uid: 0,
-      options: const ChannelMediaOptions(),
-    );
+  Future<void> joinChannel() async {
+    try{
+        await engine.joinChannel(
+          token: '0061f34ed959af04340ba1cf6ac3d68150cIACbnxXsauDyGy1tgAQuA1AhM4QpMAn5CcFh+PlSf9ajieLcsooAAAAAIgAqqmflKQkVZwQAAQC5xRNnAgC5xRNnAwC5xRNnBAC5xRNn',
+          channelId: channelName,
+          uid: 0,
+          options: const ChannelMediaOptions(),
+        );
+    }catch(e){}
   }
 
   // Toggle mute

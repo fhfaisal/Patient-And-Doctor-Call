@@ -41,15 +41,15 @@ class PatientController extends GetxController {
     await engine.startPreview();
   }
 
-  // Join the channel with a given name
-  Future<void> joinChannel(String channelName) async {
-    await engine.joinChannel(
-      token: AppHelper.tempToken,
-      channelId: channelName,
-      uid: 0,
-      options: const ChannelMediaOptions(),
-    );
-  }
+  // // Join the channel with a given name
+  // Future<void> joinChannel(String channelName) async {
+  //   await engine.joinChannel(
+  //     token: AppHelper.tempToken,
+  //     channelId: channelName,
+  //     uid: 0,
+  //     options: const ChannelMediaOptions(),
+  //   );
+  // }
 
   // Leave the channel
   Future<void> leaveChannel() async {

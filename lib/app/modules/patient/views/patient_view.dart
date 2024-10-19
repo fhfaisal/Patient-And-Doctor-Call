@@ -33,7 +33,7 @@ class PatientVideoCallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    controller.joinChannel(channelName);
+    //controller.joinChannel(channelName);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Patient Video Call")),
