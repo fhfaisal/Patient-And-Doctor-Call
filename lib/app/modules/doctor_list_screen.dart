@@ -23,7 +23,7 @@ class DoctorListScreen extends StatelessWidget {
           return ListTile(
             title: Text(doctor['name']!),
             onTap: () {
-              final channelName = "test1";
+              final channelName = "test";
               if (isPatient) {
                 Get.to(() => PatientVideoCallScreen(channelName: channelName));
               } else {

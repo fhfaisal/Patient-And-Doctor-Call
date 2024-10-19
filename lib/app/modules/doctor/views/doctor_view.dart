@@ -1,5 +1,7 @@
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'package:get/get.dart';
 
@@ -34,27 +36,23 @@ class DoctorVideoCallScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    controller.joinChannel(controller.channelName);
     return Scaffold(
-      appBar: AppBar(title: const Text("Doctor Video Call")),
+      //appBar: AppBar(title: const Text("Doctor Video Call")),
       body: Obx(() {
         if (controller.localUserJoined.value) {
-          return Stack(
+          return Column(
             children: [
-              _remoteVideo(),
-              Align(
-                alignment: Alignment.topLeft,
-                child: SizedBox(
-                  width: 100,
-                  height: 150,
-                  child: AgoraVideoView(
-                    controller: VideoViewController(
-                      rtcEngine: controller.engine,
-                      canvas: const VideoCanvas(uid: 0),
-                    ),
+              Expanded(
+                child:controller.isVideoEnabled.value==false?
+                    const Center(child: Text('Video Off'),)
+                :AgoraVideoView(
+                  controller: VideoViewController(
+                    rtcEngine: controller.engine,
+                    canvas: const VideoCanvas(uid: 0),
                   ),
                 ),
               ),
+              Expanded(child: _remoteVideo()),
               CallController(controller: controller),
             ],
           );

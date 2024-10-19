@@ -13,8 +13,9 @@ class DoctorController extends GetxController {
   final RxBool localUserJoined = false.obs;
   RxBool isMuted = false.obs;
   RxBool isVideoEnabled = true.obs;
-  final channelName=Get.arguments;
-  final Rx<TokenResponse> tokenResponse= TokenResponse().obs;
+  final channelName = Get.arguments;
+  late String channelId;
+  final Rx<TokenResponse> tokenResponse = TokenResponse().obs;
 
   @override
   void onInit() {
@@ -24,6 +25,7 @@ class DoctorController extends GetxController {
     getToken();
     initAgora();
   }
+
   Future<TokenResponse?> getToken() async {
     //Map<String, dynamic> values = {'api_token': apiToken, 'customer_id': customerId};
     try {
@@ -42,12 +44,12 @@ class DoctorController extends GetxController {
     return null;
   }
 
-
   Future<void> initAgora() async {
     final hasPermissions = await AppHelper.requestPermissions();
     if (!hasPermissions) return;
     engine = createAgoraRtcEngine();
-    await engine.initialize(const RtcEngineContext(appId: AppHelper.appId,channelProfile: ChannelProfileType.channelProfileCommunication));
+    await engine.initialize(
+        const RtcEngineContext(appId: AppHelper.appId, channelProfile: ChannelProfileType.channelProfileCommunication));
 
     engine.registerEventHandler(RtcEngineEventHandler(
       onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
@@ -67,17 +69,30 @@ class DoctorController extends GetxController {
     await engine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
     await engine.enableVideo();
     await engine.startPreview();
+    await setHDVideoConfig(engine);
+    joinChannel();
   }
 
   Future<void> joinChannel() async {
-    try{
-        await engine.joinChannel(
-          token: '0061f34ed959af04340ba1cf6ac3d68150cIACbnxXsauDyGy1tgAQuA1AhM4QpMAn5CcFh+PlSf9ajieLcsooAAAAAIgAqqmflKQkVZwQAAQC5xRNnAgC5xRNnAwC5xRNnBAC5xRNn',
-          channelId: channelName,
-          uid: 0,
-          options: const ChannelMediaOptions(),
-        );
-    }catch(e){}
+    channelId = tokenResponse.value.channelName!;
+    print("hasdkjkgbhiasdhguiWHGIUHWGIUDSLB    ${channelId}");
+    await engine.joinChannel(
+      token: tokenResponse.value.token!,
+      channelId: channelId,
+      uid: 0,
+      options: const ChannelMediaOptions(),
+    );
+  }
+  Future<void> setHDVideoConfig(RtcEngine engine) async {
+    const videoConfig = VideoEncoderConfiguration(
+      dimensions: VideoDimensions(width: 1280, height: 720), // 720p HD
+      frameRate: 30, // 30 FPS for smooth video
+      bitrate: 2000, // Bitrate in kbps (recommended: 2000+ for HD)
+      orientationMode: OrientationMode.orientationModeAdaptive, // Adaptive mode
+    );
+
+    await engine.setVideoEncoderConfiguration(videoConfig);
+    print("HD video configuration set.");
   }
 
   // Toggle mute
@@ -97,6 +112,7 @@ class DoctorController extends GetxController {
     await engine.leaveChannel();
     remoteUid!.value = 0;
     localUserJoined.value = false;
+    Get.back();
   }
 
   @override
